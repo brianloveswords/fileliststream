@@ -2,6 +2,14 @@
 
 Given a FileList, turn it into a FileListStream.
 
+# install
+
+Use it with npm & [browserify](/substack/node-browserify)
+
+```bash
+$ npm install fileliststream
+```
+
 # example
 ```js
 const FileListStream = require('fileliststream');
