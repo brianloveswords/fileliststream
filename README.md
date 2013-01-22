@@ -18,7 +18,7 @@ const body = document.body;
 // make it so console can be piped to.
 console.write = console.log;
 
-function noop(name) {
+function noop(event) {
   event.preventDefault();
   event.stopPropagation();
   return false;
