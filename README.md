@@ -58,3 +58,7 @@ FileListStream(fileList, [options])
 * `dataurl`
 * `arraybuffer`
 * `text`
+
+You can access the individual `FileStream`s by index on the
+`FileListStream` instance, or directly through the `files` property,
+which is a true array.
