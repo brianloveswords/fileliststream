@@ -1,6 +1,6 @@
 {
   "name": "fileliststream",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Convert a DOM FileList to a FileListStream",
   "main": "index.js",
   "dependencies": {
