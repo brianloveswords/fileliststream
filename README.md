@@ -54,7 +54,7 @@ FileListStream(fileList, [options])
 
 `options` currently has one possible parameter, `output`. Possible values are:
 
-* `binary` <default>
+* `binary` [default]
 * `dataurl`
 * `arraybuffer`
 * `text`
