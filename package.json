@@ -1,0 +1,27 @@
+{
+  "name": "fileliststream",
+  "version": "0.0.1",
+  "description": "Convert a DOM FileList to a FileListStream",
+  "main": "index.js",
+  "dependencies": {
+    "browserify": "~1.17.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/brianloveswords/fileliststream.git"
+  },
+  "keywords": [
+    "filelist",
+    "fileliststream",
+    "dom",
+    "filereader"
+  ],
+  "author": "Brian J. Brennan",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "gitHead": "b81694fd3cc54de6f5efd9a738977b99db431495"
+}
