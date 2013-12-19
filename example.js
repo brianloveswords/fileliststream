@@ -2,7 +2,7 @@ const FileListStream = require('./');
 const body = document.body;
 
 // make it so console can be piped to.
-console.write = console.log;
+console.write = function(obj) { console.log(obj.toString()) };
 
 function noop(event) {
   event.preventDefault();
@@ -22,9 +22,7 @@ body.addEventListener('drop', function (event) {
   event.stopPropagation();
   event.preventDefault();
 
-  const fileList = FileListStream(event.dataTransfer.files, {
-    output: 'text'
-  });
+  const fileList = FileListStream(event.dataTransfer.files);
 
   fileList.files.map(function(file) {
      file.pipe(console);

@@ -2,9 +2,11 @@
 
 Given a FileList, turn it into a FileListStream.
 
+[![NPM](https://nodei.co/npm/fileliststream.png)](https://nodei.co/npm/fileliststream/)
+
 # install
 
-Use it with npm & [browserify](/substack/node-browserify)
+Use it with npm & [browserify >= 3.0](/substack/node-browserify)
 
 ```bash
 $ npm install fileliststream
@@ -52,12 +54,14 @@ body.addEventListener('drop', function (event) {
 FileListStream(fileList, [options])
 ```
 
-`options` currently has one possible parameter, `output`. Possible values are:
+`options` can specify `output`. Possible values are:
 
-* `binary` [default]
+* `arraybuffer` [default]
+* `binary` 
 * `dataurl`
-* `arraybuffer`
 * `text`
+
+You can also specify `chunkSize`, default is `8128`. This is how many bytes will be read and written at a time to the stream you get back for each file.
 
 You can access the individual `FileStream`s by index on the
 `FileListStream` instance, or directly through the `files` property,
