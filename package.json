@@ -1,6 +1,6 @@
 {
   "name": "fileliststream",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Convert a DOM FileList to a FileListStream. Uses a FileReader to read the data of each file as a stream.",
   "main": "index.js",
   "devDependencies": {
