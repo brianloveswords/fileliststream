@@ -1,39 +1,23 @@
-;(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 const FileListStream = require('./');
 const body = document.body;
+const drop = require("drag-and-drop-files");
 
 // make it so console can be piped to.
 console.write = function(obj) { console.log(obj.toString()) };
 
-function noop(event) {
-  event.preventDefault();
-  event.stopPropagation();
-  return false;
-};
-
-['dragenter',
- 'dragleave',
- 'dragexit',
- 'dragover'
-].forEach(function (eventType) {
-   body.addEventListener(eventType, noop);
-});
-
-body.addEventListener('drop', function (event) {
-  event.stopPropagation();
-  event.preventDefault();
-
+drop(body, function(files) {
+  
   const fileList = FileListStream(event.dataTransfer.files);
 
   fileList.files.map(function(file) {
      file.pipe(console);
   });
-
-  return false;
+    
 });
-
-},{"./":2}],2:[function(require,module,exports){
-var Buffer=require("__browserify_Buffer");const Stream = require('stream');
+},{"./":2,"drag-and-drop-files":18}],2:[function(require,module,exports){
+const Stream = require('stream');
+const FileStream = require('filereader-stream');
 
 function FileListStream(fileList, options) {
   if (!(this instanceof FileListStream))
@@ -46,64 +30,8 @@ function FileListStream(fileList, options) {
   }, this);
 };
 
-function FileStream(file, options) {
-  if (!(this instanceof FileStream))
-    return new FileStream(file, options);
-  options = options || {};
-  options.output = options.output || 'arraybuffer';
-  this.options = options;
-  this._file = file;
-  this.readable = true;
-  this.offset = 0;
-  this.chunkSize = this.options.chunkSize || 8128;
-  ['name',
-   'size',
-   'type',
-   'lastModifiedDate'].forEach(function (thing) {
-     this[thing] = file[thing];
-   }, this);
-};
-
-FileStream.prototype.readChunk = function(outputType) {
-  var end = this.offset + this.chunkSize;
-  var slice = this._file.slice(this.offset, end);
-  this.offset = end;
-  if (outputType === 'binary')
-    this.reader.readAsBinaryString(slice);
-  else if (outputType === 'dataurl')
-    this.reader.readAsDataURL(slice);
-  else if (outputType === 'arraybuffer')
-    this.reader.readAsArrayBuffer(slice);
-  else if (outputType === 'text')
-    this.reader.readAsText(slice);
-}
-
-FileStream.prototype.pipe = function pipe(dest, options) {
-  var self = this;
-  const outputType = this.options.output;
-  this.reader = new FileReader();
-  this.reader.onloadend = function loaded(event) {
-    var data = event.target.result;
-    if (data instanceof ArrayBuffer)
-      data = new Buffer(new Uint8Array(event.target.result));
-    dest.write(data);
-    if (self.offset < self._file.size) {
-      self.readChunk(outputType)
-      return;
-    }
-    if (dest !== console && (!options || options.end !== false)) {
-      if (dest.end)
-        dest.end();
-      if (dest.close)
-        dest.close();
-    }
-  };
-  self.readChunk(outputType);
-  return dest;
-};
-
 module.exports = FileListStream;
-},{"__browserify_Buffer":5,"stream":11}],3:[function(require,module,exports){
+},{"filereader-stream":19,"stream":11}],3:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -5760,6 +5688,11 @@ Writable.prototype.write = function(chunk, encoding, cb) {
     encoding = null;
   }
 
+  if (chunk instanceof Uint8Array)
+    chunk = new Buffer(chunk);
+  if (chunk instanceof ArrayBuffer)
+    chunk = new Buffer(new Uint8Array(chunk));
+  
   if (Buffer.isBuffer(chunk))
     encoding = 'buffer';
   else if (!encoding)
@@ -6153,5 +6086,84 @@ function base64DetectIncompleteChar(buffer) {
   return incomplete;
 }
 
-},{"buffer":7}]},{},[1])
-;
+},{"buffer":7}],18:[function(require,module,exports){
+"use strict"
+
+function handleDrop(callback, event) {
+  event.stopPropagation()
+  event.preventDefault()
+  callback(Array.prototype.slice.call(event.dataTransfer.files))
+}
+
+function killEvent(e) {
+  e.stopPropagation()
+  e.preventDefault()
+  return false
+}
+
+function addDragDropListener(element, callback) {
+  element.addEventListener("dragenter", killEvent, false)
+  element.addEventListener("dragover", killEvent, false)
+  element.addEventListener("drop", handleDrop.bind(undefined, callback), false)
+}
+
+module.exports = addDragDropListener
+},{}],19:[function(require,module,exports){
+var Buffer=require("__browserify_Buffer");module.exports = FileStream;
+
+function FileStream(file, options) {
+  if (!(this instanceof FileStream))
+    return new FileStream(file, options);
+  options = options || {};
+  options.output = options.output || 'arraybuffer';
+  this.options = options;
+  this._file = file;
+  this.readable = true;
+  this.offset = 0;
+  this.chunkSize = this.options.chunkSize || 8128;
+  ['name',
+   'size',
+   'type',
+   'lastModifiedDate'].forEach(function (thing) {
+     this[thing] = file[thing];
+   }, this);
+};
+
+FileStream.prototype.readChunk = function(outputType) {
+  var end = this.offset + this.chunkSize;
+  var slice = this._file.slice(this.offset, end);
+  this.offset = end;
+  if (outputType === 'binary')
+    this.reader.readAsBinaryString(slice);
+  else if (outputType === 'dataurl')
+    this.reader.readAsDataURL(slice);
+  else if (outputType === 'arraybuffer')
+    this.reader.readAsArrayBuffer(slice);
+  else if (outputType === 'text')
+    this.reader.readAsText(slice);
+}
+
+FileStream.prototype.pipe = function pipe(dest, options) {
+  var self = this;
+  const outputType = this.options.output;
+  this.reader = new FileReader();
+  this.reader.onloadend = function loaded(event) {
+    var data = event.target.result;
+    if (data instanceof ArrayBuffer)
+      data = new Buffer(new Uint8Array(event.target.result));
+    dest.write(data);
+    if (self.offset < self._file.size) {
+      self.readChunk(outputType)
+      return;
+    }
+    if (dest !== console && (!options || options.end !== false)) {
+      if (dest.end)
+        dest.end();
+      if (dest.close)
+        dest.close();
+    }
+  };
+  self.readChunk(outputType);
+  return dest;
+};
+},{"__browserify_Buffer":5}]},{},[1])

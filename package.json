@@ -1,14 +1,15 @@
 {
   "name": "fileliststream",
   "version": "0.0.2",
-  "description": "Convert a DOM FileList to a FileListStream",
+  "description": "Convert a DOM FileList to a FileListStream. Uses a FileReader to read the data of each file as a stream.",
   "main": "index.js",
-  "dependencies": {
-    "browserify": "~1.17.2"
+  "devDependencies": {
+    "drag-and-drop-files": "~0.0.1",
+    "browserify": "~3.11.0",
+    "filereader-stream": "~0.0.1"
   },
-  "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "browserify example.js -o bundle.js"
   },
   "repository": {
     "type": "git",
